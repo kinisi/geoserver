@@ -7,7 +7,7 @@
 	<property name="quoteSqlIdentifiers" value="true"/>
 	<db-entity name="api_token" catalog="kinisi">
 		<db-attribute name="email" type="VARCHAR" length="255"/>
-		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true" length="20"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="20"/>
 		<db-attribute name="status" type="SMALLINT" isMandatory="true" length="5"/>
 		<db-attribute name="token" type="VARCHAR" isMandatory="true" length="255"/>
 	</db-entity>
@@ -15,7 +15,7 @@
 		<db-attribute name="altitude" type="DOUBLE" length="22"/>
 		<db-attribute name="climb" type="DOUBLE" length="22"/>
 		<db-attribute name="device_id" type="VARCHAR" isMandatory="true" length="255"/>
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
 		<db-attribute name="latitude" type="DOUBLE" length="22"/>
 		<db-attribute name="longitude" type="DOUBLE" length="22"/>
 		<db-attribute name="measure_time" type="TIMESTAMP" isMandatory="true" length="19"/>
