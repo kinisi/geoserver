@@ -48,11 +48,11 @@ public class KmlGeoDataExporter implements GeoDataExporter {
 			writer.write("        </coordinates>\n");
 			writer.write("      </LineString>\n");
 			writer.write("    </Placemark>\n");
-			writer.write("  </Document>\n");
-			writer.write("</kml>\n");
-			writer.flush();
 		}
-		
+		writer.write("  </Document>\n");
+		writer.write("</kml>\n");
+		writer.flush();
+
 	}
 
 }
