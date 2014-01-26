@@ -3,6 +3,8 @@ package cc.kinisi.geo.server;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,6 +17,15 @@ import cc.kinisi.geo.data.conversion.GeoDataExporter.ExportFormat;
 
 @WebServlet("/api/export")
 public class DataExportServlet extends HttpServlet {
+
+	private ServerController controller;
+	
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		ServletContext c = config.getServletContext();
+		controller = (ServerController) c.getAttribute(ServerController.CONTROLLER_NAME);
+	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -46,7 +57,7 @@ public class DataExportServlet extends HttpServlet {
 			}
 			
 			GeoDataExporter exporter = format.getExporter();
-			List<DeviceLocation> locs = GeoDataController.getDeviceLocations(deviceId);
+			List<DeviceLocation> locs = controller.getDeviceLocations(deviceId);
 			exporter.writeDeviceLocations(locs, resp.getWriter());
 			
 		} catch (IllegalArgumentException e) {

@@ -14,5 +14,17 @@ public class ApiToken extends _ApiToken {
 			return getStatus() == ApiToken.STATUS_ENABLED;
 		return false;
 	}
+	
+	public boolean isEnabled() {
+		return getStatus() == 1;
+	}
+	
+	public void enable() {
+		setStatus((short) STATUS_ENABLED);
+	}
+	
+	public void disable() {
+		setStatus((short) STATUS_DISABLED);
+	}
 
 }
