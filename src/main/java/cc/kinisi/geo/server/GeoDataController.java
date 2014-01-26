@@ -12,7 +12,7 @@ import org.apache.cayenne.query.SelectQuery;
 import cc.kinisi.geo.data.ApiToken;
 import cc.kinisi.geo.data.DeviceLocation;
 
-public class Controller {
+public class GeoDataController {
 
 	@SuppressWarnings("unchecked")
 	public static List<DeviceLocation> getDeviceLocations(String id) {

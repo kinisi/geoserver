@@ -46,7 +46,7 @@ public class DataExportServlet extends HttpServlet {
 			}
 			
 			GeoDataExporter exporter = format.getExporter();
-			List<DeviceLocation> locs = Controller.getDeviceLocations(deviceId);
+			List<DeviceLocation> locs = GeoDataController.getDeviceLocations(deviceId);
 			exporter.writeDeviceLocations(locs, resp.getWriter());
 			
 		} catch (IllegalArgumentException e) {

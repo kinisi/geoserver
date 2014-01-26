@@ -10,7 +10,8 @@ public interface GeoDataExporter {
 	
 	public static enum ExportFormat {
 		
-		CSV(new CsvGeoDataExporter());
+		CSV(new CsvGeoDataExporter()),
+		KML(new KmlGeoDataExporter());
 		
 		private final GeoDataExporter exporter;
 		

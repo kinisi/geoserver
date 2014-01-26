@@ -6,7 +6,13 @@ public class ApiToken extends _ApiToken {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int STATUS_DISABLED = 0;
-	public static final int STATUS_ENABLED = 1;
-	
+	static final int STATUS_DISABLED = 0;
+	static final int STATUS_ENABLED = 1;
+
+	public boolean isValid() {
+		if (getToken() != null)
+			return getStatus() == ApiToken.STATUS_ENABLED;
+		return false;
+	}
+
 }

@@ -43,7 +43,7 @@ public class KinisiDataImportServlet extends HttpServlet {
 
 		if (locs != null && locs.size() > 0) {
 			try {
-				Controller.saveDeviceLocations(locs);
+				GeoDataController.saveDeviceLocations(locs);
 			} catch (IOException e) {
 				String msg = e.getMessage();
 				resp.sendError(HttpServletResponse.SC_BAD_REQUEST,

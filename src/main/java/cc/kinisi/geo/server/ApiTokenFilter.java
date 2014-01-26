@@ -11,29 +11,17 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cc.kinisi.geo.data.ApiToken;
-
 public class ApiTokenFilter implements Filter {
 
 	public static final String TOKEN_HEADER_NAME = "X-Api-Token";
-		
-	private boolean isValidToken(String token) {
-		if (token != null) {
-			ApiToken t = Controller.getApiToken(token);
-			if (t != null) {
-				return t.getStatus() == ApiToken.STATUS_ENABLED;
-			}
-		}
-		return false;
-	}
-	
+			
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
 
 		if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
 			String token = ((HttpServletRequest) request).getHeader(TOKEN_HEADER_NAME);
-			if (isValidToken(token)) {
+			if (GeoDataController.getApiToken(token).isValid()) {
 				chain.doFilter(request, response);
 			} else {
 				((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
