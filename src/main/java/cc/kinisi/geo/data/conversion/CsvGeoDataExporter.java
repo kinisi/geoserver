@@ -28,8 +28,9 @@ public class CsvGeoDataExporter implements GeoDataExporter {
 	private static String rowFor(DeviceLocation loc) {
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < fields.length; i++) {
-			String val = loc.readProperty(fields[i]).toString();
-			sb.append(val);
+			Object val = loc.readProperty(fields[i]);
+			String strVal = val != null ? val.toString() : null;
+			sb.append(strVal);
 			if (i+1 < fields.length)
 				sb.append(',');
 		}
