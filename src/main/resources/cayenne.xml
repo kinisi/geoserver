@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domains project-version="3.0.0.1">
+<domain name="KinisiDomain">
+	<map name="KinisiDomainMap" location="KinisiDomainMap.map.xml"/>
+
+	<node name="KinisiDomainNode"
+		 datasource="KinisiDomainNode.driver.xml"
+		 adapter="org.apache.cayenne.dba.mysql.MySQLAdapter"
+		 factory="org.apache.cayenne.conf.DriverDataSourceFactory">
+			<map-ref name="KinisiDomainMap"/>
+	 </node>
+</domain>
+</domains>
