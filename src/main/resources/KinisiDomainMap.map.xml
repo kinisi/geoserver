@@ -11,6 +11,11 @@
 		<db-attribute name="status" type="SMALLINT" isMandatory="true" length="5"/>
 		<db-attribute name="token" type="VARCHAR" isMandatory="true" length="255"/>
 	</db-entity>
+	<db-entity name="device_configuration" catalog="kdev1">
+		<db-attribute name="device_id" type="VARCHAR" isMandatory="true" length="255"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true" length="19"/>
+		<db-attribute name="value" type="VARCHAR" isMandatory="true" length="255"/>
+	</db-entity>
 	<db-entity name="device_location" catalog="kinisi">
 		<db-attribute name="altitude" type="DOUBLE" length="22"/>
 		<db-attribute name="climb" type="DOUBLE" length="22"/>
@@ -27,6 +32,10 @@
 		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
 		<obj-attribute name="status" type="java.lang.Short" db-attribute-path="status"/>
 		<obj-attribute name="token" type="java.lang.String" db-attribute-path="token"/>
+	</obj-entity>
+	<obj-entity name="DeviceConfiguration" className="cc.kinisi.geo.data.DeviceConfiguration" dbEntityName="device_configuration">
+		<obj-attribute name="deviceId" type="java.lang.String" db-attribute-path="device_id"/>
+		<obj-attribute name="value" type="java.lang.String" db-attribute-path="value"/>
 	</obj-entity>
 	<obj-entity name="DeviceLocation" className="cc.kinisi.geo.data.DeviceLocation" dbEntityName="device_location">
 		<obj-attribute name="altitude" type="java.lang.Double" db-attribute-path="altitude"/>

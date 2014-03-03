@@ -15,6 +15,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.SelectQuery;
 
 import cc.kinisi.geo.data.ApiToken;
+import cc.kinisi.geo.data.DeviceConfiguration;
 import cc.kinisi.geo.data.DeviceLocation;
 
 @WebListener
@@ -31,6 +32,16 @@ public class ServerController implements ServletContextListener {
 		SelectQuery sel = new SelectQuery(DeviceLocation.class);
 		sel.setQualifier(Expression.fromString("deviceId = '" + id + "'"));
 		return getContext().performQuery(sel);
+	}
+	
+	public DeviceConfiguration getDeviceConfiguration(String id) {
+		SelectQuery sel = new SelectQuery(DeviceConfiguration.class);
+		sel.setQualifier(Expression.fromString("deviceId = '" + id + "'"));
+		List<DeviceConfiguration> confs = getContext().performQuery(sel);
+		int n = confs.size();
+		if (n > 1)
+			throw new MoreThanOneException("Multiple DeviceConfigurations found for deviceId " + id);
+		return n == 1 ? confs.get(0) : null;
 	}
 	
 	/**

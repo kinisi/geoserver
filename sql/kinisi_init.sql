@@ -23,3 +23,11 @@ CREATE TABLE `device_location` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 ;
 
+CREATE TABLE `device_configuration` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `device_id` varchar(255) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `device_id` (`device_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+;
