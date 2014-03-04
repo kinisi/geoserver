@@ -28,26 +28,27 @@ public class JsonGeoDataImporter {
 	private static final String DEVICE_RECORD_TRACK_KEY = "track";
 	private static final String DEVICE_RECORD_TIME_KEY = "time";
 	
+	private static final DateTimeFormatter dtFormatter = ISODateTimeFormat.dateTime();
+	
 	private static DeviceLocation deviceLocationFromJson(JSONObject rec)
 			throws JSONException {
 	
-		double climb = rec.getDouble(DEVICE_RECORD_CLIMB_KEY);
-		double alt = rec.getDouble(DEVICE_RECORD_ALTITUDE_KEY);
-		double lat = rec.getDouble(DEVICE_RECORD_LATITUDE_KEY);
-		double lon = rec.getDouble(DEVICE_RECORD_LONGITUDE_KEY);
-		double speed = rec.getDouble(DEVICE_RECORD_SPEED_KEY);
-		double track = rec.getDouble(DEVICE_RECORD_TRACK_KEY);
-		String mtime = rec.getString(DEVICE_RECORD_TIME_KEY);
-	
 		DeviceLocation dl = new DeviceLocation();
-		dl.setAltitude(alt);
-		dl.setClimb(climb);
-		dl.setLatitude(lat);
-		dl.setLongitude(lon);
-		dl.setSpeed(speed);
-		dl.setTrack(track);
-		DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
-		DateTime dt = fmt.parseDateTime(mtime);
+		if (rec.has(DEVICE_RECORD_LATITUDE_KEY))
+			dl.setLatitude(rec.getDouble(DEVICE_RECORD_LATITUDE_KEY));
+		if (rec.has(DEVICE_RECORD_LONGITUDE_KEY))
+			dl.setLongitude(rec.getDouble(DEVICE_RECORD_LONGITUDE_KEY));
+		if (rec.has(DEVICE_RECORD_ALTITUDE_KEY))
+			dl.setAltitude(rec.getDouble(DEVICE_RECORD_ALTITUDE_KEY));
+		if (rec.has(DEVICE_RECORD_SPEED_KEY))
+			dl.setSpeed(rec.getDouble(DEVICE_RECORD_SPEED_KEY));
+		if (rec.has(DEVICE_RECORD_TRACK_KEY))
+			dl.setTrack(rec.getDouble(DEVICE_RECORD_TRACK_KEY));
+		if (rec.has(DEVICE_RECORD_CLIMB_KEY))
+			dl.setClimb(rec.getDouble(DEVICE_RECORD_CLIMB_KEY));
+		
+		String mtime = rec.getString(DEVICE_RECORD_TIME_KEY);
+		DateTime dt = dtFormatter.parseDateTime(mtime);
 		dl.setMeasureTime(dt.toDate());
 	
 		return dl;
