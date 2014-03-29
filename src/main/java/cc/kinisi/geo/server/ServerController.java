@@ -1,12 +1,13 @@
 package cc.kinisi.geo.server;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.CayenneRuntimeException;
@@ -22,7 +23,9 @@ import cc.kinisi.geo.data.DeviceLocation;
 public class ServerController implements ServletContextListener {
 
 	public static final String CONTROLLER_NAME = ServerController.class.getName();
-	
+		
+	private static final String TOKEN_AUTH_FORMAT = "Token not authorized for device ID: %s";
+
 	public ObjectContext getContext() {
 		return BaseContext.getThreadObjectContext();
 	}
@@ -34,7 +37,8 @@ public class ServerController implements ServletContextListener {
 		return getContext().performQuery(sel);
 	}
 	
-	public DeviceConfiguration getDeviceConfiguration(String id) {
+	@SuppressWarnings("unchecked")
+  public DeviceConfiguration getDeviceConfiguration(String id) {
 		SelectQuery sel = new SelectQuery(DeviceConfiguration.class);
 		sel.setQualifier(Expression.fromString("deviceId = '" + id + "'"));
 		List<DeviceConfiguration> confs = getContext().performQuery(sel);
@@ -68,7 +72,7 @@ public class ServerController implements ServletContextListener {
 	}
 
 	public void saveDeviceLocations(List<DeviceLocation> locs)
-			throws IOException {
+			throws CayenneRuntimeException {
 
 		ObjectContext context = getContext();
 		try {
@@ -78,13 +82,37 @@ public class ServerController implements ServletContextListener {
 			context.commitChanges();
 		} catch (CayenneRuntimeException e) {
 			context.rollbackChanges();
-			String msg = e.getMessage();
-			if (e.getCause() != null) {
-				msg += ": " + e.getCause().getMessage();
-			}
-			throw new IOException(msg, e);
+			throw e;
 		}
 	}
+
+  public List<String> getAuthorizedDeivceIds(ApiToken t) {
+    List<DeviceConfiguration> configs = t.getDeviceConfigurations();
+    List<String> deviceIds = new ArrayList<>(configs.size());
+    for (DeviceConfiguration c : configs) {
+      String id = c.getDeviceId();
+      if (id != null)
+        deviceIds.add(id);
+    }
+    return deviceIds;
+  }
+  
+  public void authorizeDeviceIdForRequest(String id, HttpServletRequest req) throws UnauthorizedException {
+    ApiToken token = (ApiToken) req.getAttribute(ApiTokenFilter.API_TOKEN_REQUEST_KEY);
+    List<String> authorizedIds = getAuthorizedDeivceIds(token);
+    if (!authorizedIds.contains(id))
+      throw new UnauthorizedException(String.format(TOKEN_AUTH_FORMAT, id));
+  }
+  
+  public void authorizeDeviceLocationsForRequest(List<DeviceLocation> locs, HttpServletRequest req) throws UnauthorizedException {
+    ApiToken token = (ApiToken) req.getAttribute(ApiTokenFilter.API_TOKEN_REQUEST_KEY);
+    List<String> authorizedIds = getAuthorizedDeivceIds(token);
+    for(DeviceLocation loc : locs) {
+      String id = loc.getDeviceId();
+      if (!authorizedIds.contains(id))
+        throw new UnauthorizedException(String.format(TOKEN_AUTH_FORMAT, id));
+    }
+  }
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {

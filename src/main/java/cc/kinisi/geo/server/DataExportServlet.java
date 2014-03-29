@@ -46,6 +46,7 @@ public class DataExportServlet extends HttpServlet {
 			String deviceId = req.getParameter(PARAM_DEVICE_ID);
 			if (deviceId == null) 
 				throw new IllegalArgumentException(ERR_MISSING_DEVICE_ID);
+			controller.authorizeDeviceIdForRequest(deviceId, req);
 			ExportFormat format = DEFAULT_FORMAT;
 			String formatParam = req.getParameter(PARAM_FORMAT);
 			if (formatParam != null) {
@@ -62,7 +63,10 @@ public class DataExportServlet extends HttpServlet {
 			
 		} catch (IllegalArgumentException e) {
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+		} catch (UnauthorizedException e) {
+      resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
 		}
+		
 	}
 
 }

@@ -12,6 +12,7 @@
 		<db-attribute name="token" type="VARCHAR" isMandatory="true" length="255"/>
 	</db-entity>
 	<db-entity name="device_configuration" catalog="kdev1">
+		<db-attribute name="api_token_id" type="BIGINT"/>
 		<db-attribute name="device_id" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true" length="19"/>
 		<db-attribute name="value" type="VARCHAR" isMandatory="true" length="255"/>
@@ -49,4 +50,12 @@
 		<obj-attribute name="track" type="java.lang.Double" db-attribute-path="track"/>
 		<post-add method-name="onPostAdd"/>
 	</obj-entity>
+	<db-relationship name="device_configurations" source="api_token" target="device_configuration" toMany="true">
+		<db-attribute-pair source="id" target="api_token_id"/>
+	</db-relationship>
+	<db-relationship name="api_token" source="device_configuration" target="api_token" toMany="false">
+		<db-attribute-pair source="api_token_id" target="id"/>
+	</db-relationship>
+	<obj-relationship name="deviceConfigurations" source="ApiToken" target="DeviceConfiguration" deleteRule="Deny" db-relationship-path="device_configurations"/>
+	<obj-relationship name="apiToken" source="DeviceConfiguration" target="ApiToken" deleteRule="Nullify" db-relationship-path="api_token"/>
 </data-map>

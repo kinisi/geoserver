@@ -12,11 +12,18 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.cayenne.BaseContext;
+
+import cc.kinisi.geo.data.ApiToken;
+import cc.kinisi.geo.data.DeviceConfiguration;
+
 public class ApiTokenFilter implements Filter {
 
 	public static final String TOKEN_HEADER_NAME = "X-Api-Token";
 	public static final String TOKEN_PARAM_NAME = "api_token";
 			
+	public static final String API_TOKEN_REQUEST_KEY = "cc.kinisi.request.ApiToken";
+	
 	private ServerController controller;
 
 	/**
@@ -38,9 +45,13 @@ public class ApiTokenFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
 
+	  System.out.println(BaseContext.getThreadObjectContext());
+	  
 		if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
-			String token = getTokenValue(((HttpServletRequest) request));
-			if (controller.isValidTokenValue(token)) {
+			String tokenString = getTokenValue(((HttpServletRequest) request));
+			ApiToken apiToken = controller.getApiToken(tokenString);
+			if (apiToken != null && apiToken.isValid()) {
+			  request.setAttribute(API_TOKEN_REQUEST_KEY, apiToken);			  
 				chain.doFilter(request, response);
 			} else {
 				((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED);

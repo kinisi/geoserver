@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.json.JSONException;
 
 import cc.kinisi.geo.data.DeviceLocation;
@@ -21,11 +22,7 @@ import cc.kinisi.geo.data.conversion.JsonGeoDataImporter;
 public class KinisiDataImportServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	
-	private static final String ERR_POST_READ  = "Error reading POST data";
-	private static final String ERR_JSON_PARSE = "JSON parse error";
-	private static final String ERR_CAYENNE_ERR = "Error saving data";
-	
+			
 	private ServerController controller;
 
 	@Override
@@ -44,23 +41,20 @@ public class KinisiDataImportServlet extends HttpServlet {
 
 		List<DeviceLocation> locs = null;
 		try {
+		  
 			locs = JsonGeoDataImporter.readDeviceLocations(req.getReader());
-		} catch (JSONException e) {
-			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, ERR_JSON_PARSE
-					+ ": " + e.getMessage());
-		} catch (IOException e) {
-			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, ERR_POST_READ);
+			controller.authorizeDeviceLocationsForRequest(locs, req);
+      if (locs.size() > 0) {
+        controller.saveDeviceLocations(locs);
+      }
+
+		} catch (UnauthorizedException e) {
+      resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+		} catch (JSONException|IOException e) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+		} catch (CayenneRuntimeException e) {
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 
-		if (locs != null && locs.size() > 0) {
-			try {
-				controller.saveDeviceLocations(locs);
-			} catch (IOException e) {
-				String msg = e.getMessage();
-				resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-						ERR_CAYENNE_ERR + ": " + msg);
-			}
-		}
-		
 	}
 }

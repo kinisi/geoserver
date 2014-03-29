@@ -41,6 +41,7 @@ public class DeviceConfigurationServlet extends HttpServlet {
 			if (deviceId == null) 
 				throw new IllegalArgumentException(ERR_MISSING_DEVICE_ID);
 			
+			controller.authorizeDeviceIdForRequest(deviceId, req);
 			DeviceConfiguration conf = controller.getDeviceConfiguration(deviceId);
 			if (conf != null) 
 				resp.getWriter().write(conf.getValue());
@@ -49,6 +50,8 @@ public class DeviceConfigurationServlet extends HttpServlet {
 			
 		} catch (IllegalArgumentException e) {
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+		} catch (UnauthorizedException e) {
+      resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
 		} catch (MoreThanOneException e) {
 			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 		}
