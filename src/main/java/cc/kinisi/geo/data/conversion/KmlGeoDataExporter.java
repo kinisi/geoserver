@@ -40,9 +40,17 @@ public class KmlGeoDataExporter implements GeoDataExporter {
 			writer.write("        <altitudeMode>absolute</altitudeMode>\n");
 			writer.write("        <coordinates>\n");
 			for(DeviceLocation l : locsById.get(deviceId)) {
-				double lon = l.getLongitude();
-				double lat = l.getLatitude();
-				double alt = l.getAltitude();
+			  // replace null with 0.0 so that we at least have something to write;
+			  // longer term should handle missing data in a more KML-appropriate way
+				Double lon = l.getLongitude();
+				if (lon == null)
+				  lon = 0.0;
+				Double lat = l.getLatitude();
+				if (lat == null)
+				  lat = 0.0;
+				Double alt = l.getAltitude();
+				if (alt == null)
+				  alt = 0.0;
 				writer.write(String.format("          %f,%f,%f\n", lon,lat,alt));
 			}
 			writer.write("        </coordinates>\n");
