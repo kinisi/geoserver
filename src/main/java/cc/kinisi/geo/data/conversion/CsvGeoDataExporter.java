@@ -7,6 +7,8 @@ import java.util.List;
 import cc.kinisi.geo.data.DeviceLocation;
 
 public class CsvGeoDataExporter implements GeoDataExporter {
+  
+  public static final String CSV_MIME_TYPE = "text/csv";
 	
 	private static final String[] fields = {"measureTime", "latitude", "longitude", "speed", "altitude", "climb", "track"};
 	
@@ -45,5 +47,10 @@ public class CsvGeoDataExporter implements GeoDataExporter {
 		}
 		writer.flush();
 	}
+
+  @Override
+  public String getContentType() {
+    return CSV_MIME_TYPE;
+  }
 
 }

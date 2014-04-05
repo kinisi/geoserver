@@ -58,6 +58,7 @@ public class DataExportServlet extends HttpServlet {
 			}
 			
 			GeoDataExporter exporter = format.getExporter();
+			resp.setContentType(exporter.getContentType());
 			List<DeviceLocation> locs = controller.getDeviceLocations(deviceId);
 			exporter.writeDeviceLocations(locs, resp.getWriter());
 			

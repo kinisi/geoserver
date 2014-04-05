@@ -26,4 +26,5 @@ public interface GeoDataExporter {
 	
 	public void writeDeviceLocations(List<DeviceLocation> locs, Writer writer) throws IOException;
 
+	public String getContentType();
 }

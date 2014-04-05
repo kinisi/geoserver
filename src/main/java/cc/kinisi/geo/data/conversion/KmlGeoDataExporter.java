@@ -10,6 +10,8 @@ import java.util.Map;
 import cc.kinisi.geo.data.DeviceLocation;
 
 public class KmlGeoDataExporter implements GeoDataExporter {
+  
+  public static final String KML_MIME_TYPE = "application/vnd.google-earth.kml+xml";
 
 	private static Map<String,List<DeviceLocation>> groupByDeviceId(List<DeviceLocation> locs) {
 		Map<String,List<DeviceLocation>> locsById = new HashMap<>(locs.size());
@@ -62,5 +64,10 @@ public class KmlGeoDataExporter implements GeoDataExporter {
 		writer.flush();
 
 	}
+
+  @Override
+  public String getContentType() {
+    return KML_MIME_TYPE;
+  }
 
 }
