@@ -12,10 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.cayenne.BaseContext;
-
 import cc.kinisi.geo.data.ApiToken;
-import cc.kinisi.geo.data.DeviceConfiguration;
 
 public class ApiTokenFilter implements Filter {
 
@@ -44,8 +41,6 @@ public class ApiTokenFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-
-	  System.out.println(BaseContext.getThreadObjectContext());
 	  
 		if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
 			String tokenString = getTokenValue(((HttpServletRequest) request));

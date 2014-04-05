@@ -14,7 +14,7 @@
 	<db-entity name="device_configuration" catalog="kdev1">
 		<db-attribute name="api_token_id" type="BIGINT"/>
 		<db-attribute name="device_id" type="VARCHAR" isMandatory="true" length="255"/>
-		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true" length="19"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 		<db-attribute name="value" type="VARCHAR" isMandatory="true" length="255"/>
 	</db-entity>
 	<db-entity name="device_location" catalog="kinisi">

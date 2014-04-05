@@ -85,6 +85,15 @@ public class ServerController implements ServletContextListener {
 			throw e;
 		}
 	}
+	
+	public void createNewDeviceConfigurationWithIdForToken(String id, ApiToken token) {
+	  ObjectContext context = getContext();
+	  DeviceConfiguration config = context.newObject(DeviceConfiguration.class);
+    config.setDeviceId(id);
+    config.setApiToken(token);
+    config.setValue("{}");
+    context.commitChanges();
+	}
 
   public List<String> getAuthorizedDeivceIds(ApiToken t) {
     List<DeviceConfiguration> configs = t.getDeviceConfigurations();
@@ -109,8 +118,15 @@ public class ServerController implements ServletContextListener {
     List<String> authorizedIds = getAuthorizedDeivceIds(token);
     for(DeviceLocation loc : locs) {
       String id = loc.getDeviceId();
-      if (!authorizedIds.contains(id))
-        throw new UnauthorizedException(String.format(TOKEN_AUTH_FORMAT, id));
+      if (!authorizedIds.contains(id)) {
+        DeviceConfiguration config = getDeviceConfiguration(id);
+        if (config == null) {
+          createNewDeviceConfigurationWithIdForToken(id, token);
+          authorizedIds = getAuthorizedDeivceIds(token);
+        } else {
+          throw new UnauthorizedException(String.format(TOKEN_AUTH_FORMAT, id));
+        }
+      }
     }
   }
 
