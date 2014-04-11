@@ -4,8 +4,6 @@ package cc.kinisi.geo.server;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,19 +17,10 @@ import cc.kinisi.geo.data.DeviceLocation;
 import cc.kinisi.geo.data.conversion.JsonGeoDataImporter;
 
 @WebServlet("/api/import")
-public class KinisiDataImportServlet extends HttpServlet {
+public class KinisiDataImportServlet extends KinisiServlet {
 
 	private static final long serialVersionUID = 1L;
 			
-	private ServerController controller;
-
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-		ServletContext c = config.getServletContext();
-		controller = (ServerController) c.getAttribute(ServerController.CONTROLLER_NAME);
-	}
-
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
@@ -42,6 +31,7 @@ public class KinisiDataImportServlet extends HttpServlet {
 		List<DeviceLocation> locs = null;
 		try {
 		  
+		  ServerController controller = getController();
 			locs = JsonGeoDataImporter.readDeviceLocations(req.getReader());
 			controller.authorizeDeviceLocationsForRequest(locs, req);
       if (locs.size() > 0) {
