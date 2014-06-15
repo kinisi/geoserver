@@ -1,0 +1,6 @@
+#set( $idx = 1 )
+Record,Date,Latitude,Longitude,Altitude,Temp,Status,Course,GPS Fix,Signal,MapLink,Name,DeviceName
+#foreach( $l in $deviceLocations )
+$idx,$l.getFormattedMeasureTime("MM/dd/yyyy HH:mm:ss"),$!l.latitude,$!l.longitude,$!l.altitude,0.0,$!l.speed mph,$!l.direction,Y,0,http://maps.google.com/maps?q=$!l.latitude+$l.longitude&h=en&t=h,$l.getFormattedMeasureTime("MM/dd/yyyy HH:mm:ss") $!l.speed mph $!l.direction,$deviceId
+#set( $idx = $idx+1 )
+#end
