@@ -12,9 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.Transaction;
-import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -88,10 +85,7 @@ public class ServerController implements ServletContextListener {
 	public void saveDeviceLocations(List<DeviceLocation> locs)
 			throws CayenneRuntimeException {
 	  
-    ObjectContext context = getContext();
-    DataDomain domain = Configuration.getSharedConfiguration().getDomain();
-    Transaction tx = domain.createTransaction();
-    
+    ObjectContext context = getContext();    
     try {
       for (DeviceLocation l : locs) {
         context.registerNewObject(l);
@@ -108,18 +102,7 @@ public class ServerController implements ServletContextListener {
         SQLTemplate upsert = new SQLTemplate(DeviceLocation.class, sql);
         context.performGenericQuery(upsert);
       }
-      tx.commit();
-    } catch (Exception e) {
-      tx.setRollbackOnly();
-      throw new CayenneRuntimeException(e);
     } finally {
-      Transaction.bindThreadTransaction(null);
-      if (tx.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
-        try {
-          tx.rollback();
-        } catch (Exception rollbackEx) {
-        }
-      }
       context.rollbackChanges();
     }
 
