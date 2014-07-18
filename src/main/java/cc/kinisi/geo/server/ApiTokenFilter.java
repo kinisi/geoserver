@@ -21,7 +21,7 @@ public class ApiTokenFilter implements Filter {
 
   private Logger logger = LoggerFactory.getLogger(ApiTokenFilter.class);
     
-  public static final String REMOTE_ADDR_HEADER = "REMOTE_ADDR";
+  public static final String REMOTE_ADDR_HEADER = "X-Forwarded-For";
   
 	public static final String TOKEN_HEADER_NAME = "X-Api-Token";
 	public static final String TOKEN_PARAM_NAME = "api_token";

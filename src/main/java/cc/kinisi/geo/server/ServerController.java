@@ -12,7 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.Transaction;
+import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 
 import cc.kinisi.geo.data.ApiToken;
@@ -25,6 +29,16 @@ public class ServerController implements ServletContextListener {
 	public static final String CONTROLLER_NAME = ServerController.class.getName();
 		
 	private static final String TOKEN_AUTH_FORMAT = "Token not authorized for device ID: %s";
+	
+  private static final String DLOC_UPSERT_SQL = "insert into device_location "
+      + "(device_id, latitude, longitude, altitude, climb, measure_time, receive_time, speed, track) "
+      + "values ('%s',%.9f,%.9f,%.9f,%.9f,'%s','%s',%.9f,%.9f) on duplicate key update "
+      + "altitude = values(altitude), "
+      + "climb = values(climb), "
+      + "measure_time = values(measure_time), "
+      + "receive_time = values(receive_time), "
+      + "speed = values(speed), "
+      + "track = values(track)";
 
 	public ObjectContext getContext() {
 		return BaseContext.getThreadObjectContext();
@@ -73,17 +87,42 @@ public class ServerController implements ServletContextListener {
 
 	public void saveDeviceLocations(List<DeviceLocation> locs)
 			throws CayenneRuntimeException {
+	  
+    ObjectContext context = getContext();
+    DataDomain domain = Configuration.getSharedConfiguration().getDomain();
+    Transaction tx = domain.createTransaction();
+    
+    try {
+      for (DeviceLocation l : locs) {
+        context.registerNewObject(l);
+        String devid = l.getDeviceId();
+        Double lat = l.getLatitude();
+        Double lon = l.getLongitude();
+        Double alt = l.getAltitude();
+        Double climb = l.getClimb();
+        String mtime = l.getFormattedMeasureTime("yyyy-MM-dd HH:mm:ss");
+        String rtime = l.getFormattedReceiveTime("yyyy-MM-dd HH:mm:ss");
+        Double speed = l.getSpeed();
+        Double track = l.getTrack();
+        String sql = String.format(DLOC_UPSERT_SQL, devid, lat, lon, alt, climb, mtime, rtime, speed, track);
+        SQLTemplate upsert = new SQLTemplate(DeviceLocation.class, sql);
+        context.performGenericQuery(upsert);
+      }
+      tx.commit();
+    } catch (Exception e) {
+      tx.setRollbackOnly();
+      throw new CayenneRuntimeException(e);
+    } finally {
+      Transaction.bindThreadTransaction(null);
+      if (tx.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
+        try {
+          tx.rollback();
+        } catch (Exception rollbackEx) {
+        }
+      }
+      context.rollbackChanges();
+    }
 
-		ObjectContext context = getContext();
-		try {
-			for (DeviceLocation loc : locs) {
-				context.registerNewObject(loc);
-			}
-			context.commitChanges();
-		} catch (CayenneRuntimeException e) {
-			context.rollbackChanges();
-			throw e;
-		}
 	}
 	
 	public void createNewDeviceConfigurationWithIdForToken(String id, ApiToken token) {
