@@ -14,10 +14,13 @@ CREATE TABLE `device_location_unique` (
   KEY `device_time` (`device_id`,`measure_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=606811 DEFAULT CHARSET=utf8;
 
+
+create temporary table dmax select device_id, latitude, longitude, max(id) max_id from device_location group by 1, 2, 3;
+
 insert into device_location_unique
-select * from device_location where id in (
-  select max_id from (select device_id, latitude, longitude, max(id) max_id from device_location group by 1, 2, 3) t1
-);
+select t1.altitude, t1.climb, t1.device_id, t1.id, t1.latitude, t1.longitude, t1.measure_time, t1.receive_time, t1.speed, t1.track from device_location t1 join dmax t2 on t1.id = t2.max_id 
 
 rename table device_location to device_location_dupes;
 rename table device_location_unique to device_location;
+
+drop table dmax;
