@@ -15,6 +15,9 @@ public abstract class _DeviceLocation extends CayenneDataObject {
     public static final String ALTITUDE_PROPERTY = "altitude";
     public static final String CLIMB_PROPERTY = "climb";
     public static final String DEVICE_ID_PROPERTY = "deviceId";
+    public static final String EPV_PROPERTY = "epv";
+    public static final String EPX_PROPERTY = "epx";
+    public static final String EPY_PROPERTY = "epy";
     public static final String LATITUDE_PROPERTY = "latitude";
     public static final String LONGITUDE_PROPERTY = "longitude";
     public static final String MEASURE_TIME_PROPERTY = "measureTime";
@@ -43,6 +46,27 @@ public abstract class _DeviceLocation extends CayenneDataObject {
     }
     public String getDeviceId() {
         return (String)readProperty("deviceId");
+    }
+
+    public void setEpv(Double epv) {
+        writeProperty("epv", epv);
+    }
+    public Double getEpv() {
+        return (Double)readProperty("epv");
+    }
+
+    public void setEpx(Double epx) {
+        writeProperty("epx", epx);
+    }
+    public Double getEpx() {
+        return (Double)readProperty("epx");
+    }
+
+    public void setEpy(Double epy) {
+        writeProperty("epy", epy);
+    }
+    public Double getEpy() {
+        return (Double)readProperty("epy");
     }
 
     public void setLatitude(Double latitude) {

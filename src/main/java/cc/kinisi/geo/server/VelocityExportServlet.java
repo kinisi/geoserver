@@ -18,7 +18,7 @@ import cc.kinisi.geo.data.DeviceLocation;
 import cc.kinisi.geo.data.conversion.TemplateExportFormat;
 import cc.kinisi.geo.data.conversion.TemplateLoadException;
 
-@WebServlet("/api/export2")
+@WebServlet("/api/export")
 public class VelocityExportServlet extends KinisiServlet {
 
   private static final long serialVersionUID = 1L;

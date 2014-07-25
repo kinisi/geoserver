@@ -27,6 +27,9 @@ public class JsonGeoDataImporter {
 	private static final String DEVICE_RECORD_SPEED_KEY = "speed";
 	private static final String DEVICE_RECORD_TRACK_KEY = "track";
 	private static final String DEVICE_RECORD_TIME_KEY = "time";
+  private static final String DEVICE_RECORD_EPX_KEY = "epx";
+  private static final String DEVICE_RECORD_EPY_KEY = "epy";
+  private static final String DEVICE_RECORD_EPV_KEY = "epv";
 	
 	private static final DateTimeFormatter dtFormatter = ISODateTimeFormat.dateTime();
 	
@@ -46,6 +49,12 @@ public class JsonGeoDataImporter {
 			dl.setTrack(rec.getDouble(DEVICE_RECORD_TRACK_KEY));
 		if (rec.has(DEVICE_RECORD_CLIMB_KEY))
 			dl.setClimb(rec.getDouble(DEVICE_RECORD_CLIMB_KEY));
+		if (rec.has(DEVICE_RECORD_EPX_KEY))
+      dl.setEpx(rec.getDouble(DEVICE_RECORD_EPX_KEY));
+    if (rec.has(DEVICE_RECORD_EPY_KEY))
+      dl.setEpy(rec.getDouble(DEVICE_RECORD_EPY_KEY));
+    if (rec.has(DEVICE_RECORD_EPV_KEY))
+      dl.setEpv(rec.getDouble(DEVICE_RECORD_EPV_KEY));
 		
 		String mtime = rec.getString(DEVICE_RECORD_TIME_KEY);
 		DateTime dt = dtFormatter.parseDateTime(mtime);

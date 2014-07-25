@@ -28,6 +28,9 @@
 		<db-attribute name="receive_time" type="TIMESTAMP" isMandatory="true" length="19"/>
 		<db-attribute name="speed" type="DOUBLE" length="22"/>
 		<db-attribute name="track" type="DOUBLE" length="22"/>
+	  <db-attribute name="epx" type="DOUBLE" length="22" />
+	  <db-attribute name="epy" type="DOUBLE" length="22" />
+ 	  <db-attribute name="epv" type="DOUBLE" length="22" />
 	</db-entity>
 	<obj-entity name="ApiToken" className="cc.kinisi.geo.data.ApiToken" dbEntityName="api_token">
 		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
@@ -48,6 +51,9 @@
 		<obj-attribute name="receiveTime" type="java.util.Date" db-attribute-path="receive_time"/>
 		<obj-attribute name="speed" type="java.lang.Double" db-attribute-path="speed"/>
 		<obj-attribute name="track" type="java.lang.Double" db-attribute-path="track"/>
+    <obj-attribute name="epx" type="java.lang.Double" db-attribute-path="epx"/>
+    <obj-attribute name="epy" type="java.lang.Double" db-attribute-path="epy"/>
+    <obj-attribute name="epv" type="java.lang.Double" db-attribute-path="epv"/>
 		<post-add method-name="onPostAdd"/>
 	</obj-entity>
 	<db-relationship name="device_configurations" source="api_token" target="device_configuration" toMany="true">

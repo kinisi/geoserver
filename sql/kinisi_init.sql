@@ -4,7 +4,7 @@ CREATE TABLE `api_token` (
   `status` smallint(6) NOT NULL,
   `token` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
 ;
 
 CREATE TABLE `device_location` (
@@ -18,9 +18,12 @@ CREATE TABLE `device_location` (
   `receive_time` datetime NOT NULL,
   `speed` double DEFAULT NULL,
   `track` double DEFAULT NULL,
+  `epx` double DEFAULT NULL,
+  `epy` double DEFAULT NULL,
+  `epv` double DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `device_time` (`device_id`,`measure_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=131240 DEFAULT CHARSET=utf8
+  UNIQUE KEY `device_time_lat_long` (`device_id`,`measure_time`,`latitude`,`longitude`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
 ;
 
 CREATE TABLE `device_configuration` (
@@ -32,5 +35,5 @@ CREATE TABLE `device_configuration` (
   UNIQUE KEY `device_id` (`device_id`),
   KEY `api_token_id` (`api_token_id`),
   CONSTRAINT `device_configuration_ibfk_1` FOREIGN KEY (`api_token_id`) REFERENCES `api_token` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
 ;

@@ -28,14 +28,17 @@ public class ServerController implements ServletContextListener {
 	private static final String TOKEN_AUTH_FORMAT = "Token not authorized for device ID: %s";
 	
   private static final String DLOC_UPSERT_SQL = "insert into device_location "
-      + "(device_id, latitude, longitude, altitude, climb, measure_time, receive_time, speed, track) "
-      + "values ('%s',%.9f,%.9f,%.9f,%.9f,'%s','%s',%.9f,%.9f) on duplicate key update "
+      + "(device_id, latitude, longitude, altitude, climb, measure_time, receive_time, speed, track, epx, epy, epv) "
+      + "values ('%s',%.9f,%.9f,%.9f,%.9f,'%s','%s',%.9f,%.9f,%.9f,%.9f,%.9f) on duplicate key update "
       + "altitude = values(altitude), "
       + "climb = values(climb), "
       + "measure_time = values(measure_time), "
       + "receive_time = values(receive_time), "
       + "speed = values(speed), "
-      + "track = values(track)";
+      + "track = values(track), "
+      + "epx = values(epx), "
+      + "epy = values(epy), "
+      + "epv = values(epv)";
 
 	public ObjectContext getContext() {
 		return BaseContext.getThreadObjectContext();
@@ -98,7 +101,10 @@ public class ServerController implements ServletContextListener {
         String rtime = l.getFormattedReceiveTime("yyyy-MM-dd HH:mm:ss");
         Double speed = l.getSpeed();
         Double track = l.getTrack();
-        String sql = String.format(DLOC_UPSERT_SQL, devid, lat, lon, alt, climb, mtime, rtime, speed, track);
+        Double epx = l.getEpx();
+        Double epy = l.getEpy();
+        Double epv = l.getEpv();
+        String sql = String.format(DLOC_UPSERT_SQL, devid, lat, lon, alt, climb, mtime, rtime, speed, track, epx, epy, epv);
         SQLTemplate upsert = new SQLTemplate(DeviceLocation.class, sql);
         context.performGenericQuery(upsert);
       }

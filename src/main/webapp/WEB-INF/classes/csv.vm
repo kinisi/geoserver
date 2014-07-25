@@ -1,4 +1,4 @@
-measure_time,latitude,longitude,speed,altitude,climb,track
+measure_time,latitude,longitude,speed,altitude,climb,track,epx,epy,epv
 #foreach( $l in $deviceLocations )
-$!l.measureTime,$!l.latitude,$!l.longitude,$!l.speed,$!l.altitude,$!l.climb,$!l.track
+$!l.measureTime,$!l.latitude,$!l.longitude,$!l.speed,$!l.altitude,$!l.climb,$!l.track,$!l.epx,$!l.epy,$!l.epv
 #end
