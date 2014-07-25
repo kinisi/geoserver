@@ -7,7 +7,7 @@
         <altitudeMode>absolute</altitudeMode>
         <coordinates>
         #foreach( $l in $deviceLocations )
-        $!l.latitude,$!l.longitude,$!l.altitude
+        $!l.longitude,$!l.latitude,$!l.altitude
         #end     
         </coordinates>
       </LineString>
