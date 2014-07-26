@@ -5,32 +5,39 @@
   project-version="3.0.0.1">
 	<property name="defaultPackage" value="cc.kinisi.geo.data"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
-	<db-entity name="api_token" catalog="kinisi">
+	<db-entity name="api_token" catalog="kdev1">
 		<db-attribute name="email" type="VARCHAR" length="255"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="20"/>
-		<db-attribute name="status" type="SMALLINT" isMandatory="true" length="5"/>
+		<db-attribute name="status" type="SMALLINT" isMandatory="true" length="6"/>
 		<db-attribute name="token" type="VARCHAR" isMandatory="true" length="255"/>
 	</db-entity>
 	<db-entity name="device_configuration" catalog="kdev1">
-		<db-attribute name="api_token_id" type="BIGINT"/>
+		<db-attribute name="api_token_id" type="BIGINT" length="20"/>
 		<db-attribute name="device_id" type="VARCHAR" isMandatory="true" length="255"/>
-		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="20"/>
 		<db-attribute name="value" type="VARCHAR" isMandatory="true" length="255"/>
 	</db-entity>
-	<db-entity name="device_location" catalog="kinisi">
+	<db-entity name="device_interface" catalog="kdev1">
+		<db-attribute name="address" type="VARCHAR" isMandatory="true" length="255"/>
+		<db-attribute name="device_configuration_id" type="BIGINT" isMandatory="true" length="20"/>
+		<db-attribute name="device_id" type="VARCHAR" isMandatory="true" length="255"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="20"/>
+		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="255"/>
+	</db-entity>
+	<db-entity name="device_location" catalog="kdev1">
 		<db-attribute name="altitude" type="DOUBLE" length="22"/>
 		<db-attribute name="climb" type="DOUBLE" length="22"/>
 		<db-attribute name="device_id" type="VARCHAR" isMandatory="true" length="255"/>
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="epv" type="DOUBLE" length="22"/>
+		<db-attribute name="epx" type="DOUBLE" length="22"/>
+		<db-attribute name="epy" type="DOUBLE" length="22"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="20"/>
 		<db-attribute name="latitude" type="DOUBLE" length="22"/>
 		<db-attribute name="longitude" type="DOUBLE" length="22"/>
 		<db-attribute name="measure_time" type="TIMESTAMP" isMandatory="true" length="19"/>
 		<db-attribute name="receive_time" type="TIMESTAMP" isMandatory="true" length="19"/>
 		<db-attribute name="speed" type="DOUBLE" length="22"/>
 		<db-attribute name="track" type="DOUBLE" length="22"/>
-	  <db-attribute name="epx" type="DOUBLE" length="22" />
-	  <db-attribute name="epy" type="DOUBLE" length="22" />
- 	  <db-attribute name="epv" type="DOUBLE" length="22" />
 	</db-entity>
 	<obj-entity name="ApiToken" className="cc.kinisi.geo.data.ApiToken" dbEntityName="api_token">
 		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
@@ -41,19 +48,24 @@
 		<obj-attribute name="deviceId" type="java.lang.String" db-attribute-path="device_id"/>
 		<obj-attribute name="value" type="java.lang.String" db-attribute-path="value"/>
 	</obj-entity>
+	<obj-entity name="DeviceInterface" className="cc.kinisi.geo.data.DeviceInterface" dbEntityName="device_interface">
+		<obj-attribute name="address" type="java.lang.String" db-attribute-path="address"/>
+		<obj-attribute name="deviceId" type="java.lang.String" db-attribute-path="device_id"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
 	<obj-entity name="DeviceLocation" className="cc.kinisi.geo.data.DeviceLocation" dbEntityName="device_location">
 		<obj-attribute name="altitude" type="java.lang.Double" db-attribute-path="altitude"/>
 		<obj-attribute name="climb" type="java.lang.Double" db-attribute-path="climb"/>
 		<obj-attribute name="deviceId" type="java.lang.String" db-attribute-path="device_id"/>
+		<obj-attribute name="epv" type="java.lang.Double" db-attribute-path="epv"/>
+		<obj-attribute name="epx" type="java.lang.Double" db-attribute-path="epx"/>
+		<obj-attribute name="epy" type="java.lang.Double" db-attribute-path="epy"/>
 		<obj-attribute name="latitude" type="java.lang.Double" db-attribute-path="latitude"/>
 		<obj-attribute name="longitude" type="java.lang.Double" db-attribute-path="longitude"/>
 		<obj-attribute name="measureTime" type="java.util.Date" db-attribute-path="measure_time"/>
 		<obj-attribute name="receiveTime" type="java.util.Date" db-attribute-path="receive_time"/>
 		<obj-attribute name="speed" type="java.lang.Double" db-attribute-path="speed"/>
 		<obj-attribute name="track" type="java.lang.Double" db-attribute-path="track"/>
-    <obj-attribute name="epx" type="java.lang.Double" db-attribute-path="epx"/>
-    <obj-attribute name="epy" type="java.lang.Double" db-attribute-path="epy"/>
-    <obj-attribute name="epv" type="java.lang.Double" db-attribute-path="epv"/>
 		<post-add method-name="onPostAdd"/>
 	</obj-entity>
 	<db-relationship name="device_configurations" source="api_token" target="device_configuration" toMany="true">
@@ -62,6 +74,13 @@
 	<db-relationship name="api_token" source="device_configuration" target="api_token" toMany="false">
 		<db-attribute-pair source="api_token_id" target="id"/>
 	</db-relationship>
+	<db-relationship name="device_interfaces" source="device_configuration" target="device_interface" toMany="true">
+		<db-attribute-pair source="id" target="device_configuration_id"/>
+	</db-relationship>
+	<db-relationship name="device_configuration" source="device_interface" target="device_configuration" toMany="false">
+		<db-attribute-pair source="device_configuration_id" target="id"/>
+	</db-relationship>
 	<obj-relationship name="deviceConfigurations" source="ApiToken" target="DeviceConfiguration" deleteRule="Deny" db-relationship-path="device_configurations"/>
-	<obj-relationship name="apiToken" source="DeviceConfiguration" target="ApiToken" deleteRule="Nullify" db-relationship-path="api_token"/>
+	<obj-relationship name="deviceInterfaces" source="DeviceConfiguration" target="DeviceInterface" deleteRule="Deny" db-relationship-path="device_interfaces"/>
+	<obj-relationship name="deviceConfiguration" source="DeviceInterface" target="DeviceConfiguration" deleteRule="Nullify" db-relationship-path="device_configuration"/>
 </data-map>

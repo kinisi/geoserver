@@ -13,8 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.json.JSONException;
 
+import cc.kinisi.geo.data.DeviceConfiguration;
+import cc.kinisi.geo.data.DeviceInterface;
 import cc.kinisi.geo.data.DeviceLocation;
-import cc.kinisi.geo.data.conversion.JsonGeoDataImporter;
+import cc.kinisi.geo.data.conversion.JsonGeoDataReader;
 
 @WebServlet("/api/import")
 public class KinisiDataImportServlet extends KinisiServlet {
@@ -28,14 +30,19 @@ public class KinisiDataImportServlet extends KinisiServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		List<DeviceLocation> locs = null;
 		try {
 		  
 		  ServerController controller = getController();
-			locs = JsonGeoDataImporter.readDeviceLocations(req.getReader());
-			controller.authorizeDeviceLocationsForRequest(locs, req);
-      if (locs.size() > 0) {
+		  JsonGeoDataReader reader = new JsonGeoDataReader(req.getReader());
+		  String deviceId = reader.getDeviceId();
+		  controller.authorizeDeviceIdForRequest(deviceId, req);
+		  List<DeviceLocation> locs = reader.getDeviceLocations();
+      if (locs != null && locs.size() > 0) {
         controller.saveDeviceLocations(locs);
+      }
+      List<DeviceInterface> ifs = reader.getDeviceInterfaces();
+      if (ifs != null && ifs.size() > 0) {
+        controller.updateDeviceInterfacesForDeviceId(ifs, deviceId);
       }
 
 		} catch (UnauthorizedException e) {

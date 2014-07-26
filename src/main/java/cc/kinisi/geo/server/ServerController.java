@@ -18,6 +18,7 @@ import org.apache.cayenne.query.SelectQuery;
 
 import cc.kinisi.geo.data.ApiToken;
 import cc.kinisi.geo.data.DeviceConfiguration;
+import cc.kinisi.geo.data.DeviceInterface;
 import cc.kinisi.geo.data.DeviceLocation;
 
 @WebListener
@@ -137,27 +138,29 @@ public class ServerController implements ServletContextListener {
   public void authorizeDeviceIdForRequest(String id, HttpServletRequest req) throws UnauthorizedException {
     ApiToken token = (ApiToken) req.getAttribute(ApiTokenFilter.API_TOKEN_REQUEST_KEY);
     List<String> authorizedIds = getAuthorizedDeivceIds(token);
-    if (!authorizedIds.contains(id))
-      throw new UnauthorizedException(String.format(TOKEN_AUTH_FORMAT, id));
-  }
-  
-  public void authorizeDeviceLocationsForRequest(List<DeviceLocation> locs, HttpServletRequest req) throws UnauthorizedException {
-    ApiToken token = (ApiToken) req.getAttribute(ApiTokenFilter.API_TOKEN_REQUEST_KEY);
-    List<String> authorizedIds = getAuthorizedDeivceIds(token);
-    for(DeviceLocation loc : locs) {
-      String id = loc.getDeviceId();
-      if (!authorizedIds.contains(id)) {
-        DeviceConfiguration config = getDeviceConfiguration(id);
-        if (config == null) {
-          createNewDeviceConfigurationWithIdForToken(id, token);
-          authorizedIds = getAuthorizedDeivceIds(token);
-        } else {
-          throw new UnauthorizedException(String.format(TOKEN_AUTH_FORMAT, id));
-        }
+    if (!authorizedIds.contains(id)) {
+      DeviceConfiguration config = getDeviceConfiguration(id);
+      if (config == null) {
+        createNewDeviceConfigurationWithIdForToken(id, token);
+        authorizedIds = getAuthorizedDeivceIds(token);
+      } else {
+        throw new UnauthorizedException(String.format(TOKEN_AUTH_FORMAT, id));
       }
     }
   }
-
+  
+  public void updateDeviceInterfacesForDeviceId(List<DeviceInterface> nics, String deviceId) {
+    DeviceConfiguration conf = getDeviceConfiguration(deviceId);
+    List<DeviceInterface> oldInterfaces = conf.getDeviceInterfaces();
+    ObjectContext c = getContext();
+    c.deleteObjects(oldInterfaces);
+    c.commitChanges();
+    for(DeviceInterface i : nics) {
+      conf.addToDeviceInterfaces(i);
+    }
+    c.commitChanges();
+  }
+  
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		ServletContext c = sce.getServletContext();

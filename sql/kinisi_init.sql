@@ -36,4 +36,15 @@ CREATE TABLE `device_configuration` (
   KEY `api_token_id` (`api_token_id`),
   CONSTRAINT `device_configuration_ibfk_1` FOREIGN KEY (`api_token_id`) REFERENCES `api_token` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+
+CREATE TABLE `device_interface` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `device_id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `device_configuration_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `device_name` (`device_id`, `name`),
+  CONSTRAINT `device_interface_ibfk_1` FOREIGN KEY (`device_configuration_id`) REFERENCES `device_configuration` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
 ;

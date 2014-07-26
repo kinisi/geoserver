@@ -13,12 +13,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import cc.kinisi.geo.data.DeviceInterface;
 import cc.kinisi.geo.data.DeviceLocation;
 
-public class JsonGeoDataImporter {
+public class JsonGeoDataReader {
 	
 	private static final String DEVICE_ID_KEY = "deviceId";
 	private static final String DEVICE_RECORDS_KEY = "deviceRecords";
+	private static final String DEVICE_MACS_KEY = "deviceMACs";
 	
 	private static final String DEVICE_RECORD_CLIMB_KEY = "climb";
 	private static final String DEVICE_RECORD_ALTITUDE_KEY = "alt";
@@ -63,21 +65,53 @@ public class JsonGeoDataImporter {
 		return dl;
 	
 	}
-
-	public static List<DeviceLocation> readDeviceLocations(Reader reader) throws JSONException,
-			IOException {
-		JSONObject payload = new JSONObject(new JSONTokener(reader));
-		String deviceId = payload.getString(DEVICE_ID_KEY);
-		JSONArray objects = payload.getJSONArray(DEVICE_RECORDS_KEY);
-		int size = objects.length();
-		List<DeviceLocation> dlocs = new ArrayList<>(size);
-		for (int i = 0; i < size; i++) {
-			JSONObject dlObj = objects.getJSONObject(i);
-			DeviceLocation dl = deviceLocationFromJson(dlObj);
-			dl.setDeviceId(deviceId);
-			dlocs.add(dl);
-		}
-		return dlocs;
+	
+	private final JSONObject body;
+	private final String deviceId;
+	
+	public JsonGeoDataReader(Reader reader) {
+	   body = new JSONObject(new JSONTokener(reader));
+	   deviceId = body.getString(DEVICE_ID_KEY);
 	}
+	
+	public String getDeviceId() {
+	  return deviceId;
+	}
+
+  public List<DeviceLocation> getDeviceLocations() throws JSONException, IOException {
+    List<DeviceLocation> dlocs = null;
+    if (body.has(DEVICE_RECORDS_KEY)) {
+      JSONArray objects = body.getJSONArray(DEVICE_RECORDS_KEY);
+      int size = objects.length();
+      dlocs = new ArrayList<>(size);
+      for (int i = 0; i < size; i++) {
+        JSONObject dlObj = objects.getJSONObject(i);
+        DeviceLocation dl = deviceLocationFromJson(dlObj);
+        dl.setDeviceId(deviceId);
+        dlocs.add(dl);
+      }
+    }
+    return dlocs;
+	}
+  
+  public List<DeviceInterface> getDeviceInterfaces() {
+    List<DeviceInterface> interfaces = null;
+    if (body.has(DEVICE_MACS_KEY)) {
+      interfaces = new ArrayList<>();
+      JSONObject macs = body.getJSONObject(DEVICE_MACS_KEY);
+      String[] names = JSONObject.getNames(macs);
+      if (names != null) {
+        for (String n : names) {
+          String addr = macs.getString(n);
+          DeviceInterface di = new DeviceInterface();
+          di.setDeviceId(deviceId);
+          di.setName(n);
+          di.setAddress(addr);
+          interfaces.add(di);
+        }
+      }
+    }
+    return interfaces;
+  }
 
 }
