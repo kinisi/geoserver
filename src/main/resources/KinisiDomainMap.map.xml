@@ -81,6 +81,7 @@
 		<db-attribute-pair source="device_configuration_id" target="id"/>
 	</db-relationship>
 	<obj-relationship name="deviceConfigurations" source="ApiToken" target="DeviceConfiguration" deleteRule="Deny" db-relationship-path="device_configurations"/>
+	<obj-relationship name="apiToken" source="DeviceConfiguration" target="ApiToken" deleteRule="Nullify" db-relationship-path="api_token"/>
 	<obj-relationship name="deviceInterfaces" source="DeviceConfiguration" target="DeviceInterface" deleteRule="Deny" db-relationship-path="device_interfaces"/>
 	<obj-relationship name="deviceConfiguration" source="DeviceInterface" target="DeviceConfiguration" deleteRule="Nullify" db-relationship-path="device_configuration"/>
 </data-map>
