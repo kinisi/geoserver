@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import cc.kinisi.geo.data.DeviceLocation;
 import cc.kinisi.geo.data.conversion.TemplateExportFormat;
@@ -29,6 +32,8 @@ public class VelocityExportServlet extends KinisiServlet {
   
   private static final String PARAM_FORMAT = "format";
   private static final String PARAM_DEVICE_ID = "device_id";
+  private static final String PARAM_START_TIME = "start_time";
+  private static final String PARAM_END_TIME = "end_time";
   
   private static final String ERR_MISSING_DEVICE_ID = "Valid " + PARAM_DEVICE_ID + " parameter must be provided.";
   private static final String ERR_FORMAT = "Format not supported";
@@ -47,16 +52,27 @@ public class VelocityExportServlet extends KinisiServlet {
     }
   }
   
+  protected static DateTime parseTimeParam(String dateParam) {
+    DateTime dt = null;
+    if (dateParam != null) {
+      DateTimeFormatter f = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+      dt = f.parseDateTime(dateParam);
+    }
+    return dt;
+  }
+  
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
         
     try {
             
+      ServerController controller = getController();
+      
       String deviceId = req.getParameter(PARAM_DEVICE_ID);
       if (deviceId == null) 
         throw new IllegalArgumentException(ERR_MISSING_DEVICE_ID);
-      getController().authorizeDeviceIdForRequest(deviceId, req);
+      controller.authorizeDeviceIdForRequest(deviceId, req);
       TemplateExportFormat format = DEFAULT_FORMAT;
       String formatParam = req.getParameter(PARAM_FORMAT);
       if (formatParam != null) {
@@ -67,7 +83,10 @@ public class VelocityExportServlet extends KinisiServlet {
         }
       }
 
-      List<DeviceLocation> locs = getController().getDeviceLocations(deviceId);
+      DateTime startDate = parseTimeParam(req.getParameter(PARAM_START_TIME));
+      DateTime endDate = parseTimeParam(req.getParameter(PARAM_END_TIME));
+      
+      List<DeviceLocation> locs = controller.getDeviceLocations(deviceId, startDate, endDate);
       resp.setContentType(format.getContentType());
       VelocityContext context = new VelocityContext();
       context.put("deviceId", deviceId);

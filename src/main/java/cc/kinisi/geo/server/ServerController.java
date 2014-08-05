@@ -15,6 +15,9 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import cc.kinisi.geo.data.ApiToken;
 import cc.kinisi.geo.data.DeviceConfiguration;
@@ -46,9 +49,17 @@ public class ServerController implements ServletContextListener {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<DeviceLocation> getDeviceLocations(String id) {
-		SelectQuery sel = new SelectQuery(DeviceLocation.class);
-		sel.setQualifier(Expression.fromString("deviceId = '" + id + "'"));
+	public List<DeviceLocation> getDeviceLocations(String id, DateTime startTime, DateTime endTime) {
+		if (startTime == null)
+		  startTime = new DateTime(0);
+		if (endTime == null)
+		  endTime = DateTime.now();
+	  DateTimeFormatter f = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+		String s = f.print(startTime);
+		String e = f.print(endTime);
+		String exp = String.format("deviceId = '%s' and measureTime >= '%s' and measureTime <= '%s'", id, s, e);
+    SelectQuery sel = new SelectQuery(DeviceLocation.class);
+		sel.setQualifier(Expression.fromString(exp));
 		return getContext().performQuery(sel);
 	}
 	
