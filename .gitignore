@@ -1,1 +1,11 @@
 /target
+
+# Mac OSX
+.DS_Store
+
+# VIM
+.*.sw*
+
+# IntelliJ
+*.iml
+.idea
