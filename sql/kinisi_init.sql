@@ -36,6 +36,7 @@ CREATE TABLE `device_configuration` (
   KEY `api_token_id` (`api_token_id`),
   CONSTRAINT `device_configuration_ibfk_1` FOREIGN KEY (`api_token_id`) REFERENCES `api_token` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+;
 
 CREATE TABLE `device_interface` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
