@@ -25,16 +25,16 @@ import cc.kinisi.geo.data.conversion.TemplateLoadException;
 public class VelocityExportServlet extends KinisiServlet {
 
   private static final long serialVersionUID = 1L;
-  
+
   private static final String VELOCITY_CONFIG = "/velocity.properties";
 
   private static final TemplateExportFormat DEFAULT_FORMAT = TemplateExportFormat.CSV;
-  
+
   private static final String PARAM_FORMAT = "format";
   private static final String PARAM_DEVICE_ID = "device_id";
   private static final String PARAM_START_TIME = "start_time";
   private static final String PARAM_END_TIME = "end_time";
-  
+
   private static final String ERR_MISSING_DEVICE_ID = "Valid " + PARAM_DEVICE_ID + " parameter must be provided.";
   private static final String ERR_FORMAT = "Format not supported";
 
@@ -51,7 +51,7 @@ public class VelocityExportServlet extends KinisiServlet {
       throw new ServletException(msg, e);
     }
   }
-  
+
   protected static DateTime parseTimeParam(String dateParam) {
     DateTime dt = null;
     if (dateParam != null) {
@@ -60,24 +60,24 @@ public class VelocityExportServlet extends KinisiServlet {
     }
     return dt;
   }
-  
+
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-        
+
     try {
-            
       ServerController controller = getController();
-      
+
       String deviceId = req.getParameter(PARAM_DEVICE_ID);
-      if (deviceId == null) 
+      if (deviceId == null) {
         throw new IllegalArgumentException(ERR_MISSING_DEVICE_ID);
+      }
       controller.authorizeDeviceIdForRequest(deviceId, req);
       TemplateExportFormat format = DEFAULT_FORMAT;
       String formatParam = req.getParameter(PARAM_FORMAT);
       if (formatParam != null) {
         try {
-        format = TemplateExportFormat.valueOf(formatParam.toUpperCase());
+          format = TemplateExportFormat.valueOf(formatParam.toUpperCase());
         } catch (IllegalArgumentException e) {
           throw new IllegalArgumentException(ERR_FORMAT + ": " + formatParam);
         }
@@ -85,14 +85,13 @@ public class VelocityExportServlet extends KinisiServlet {
 
       DateTime startDate = parseTimeParam(req.getParameter(PARAM_START_TIME));
       DateTime endDate = parseTimeParam(req.getParameter(PARAM_END_TIME));
-      
+
       List<DeviceLocation> locs = controller.getDeviceLocations(deviceId, startDate, endDate);
       resp.setContentType(format.getContentType());
       VelocityContext context = new VelocityContext();
       context.put("deviceId", deviceId);
       context.put("deviceLocations", locs);
       format.getTemplate().merge(context, resp.getWriter());
-      
     } catch (TemplateLoadException e) {
       resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
       e.printStackTrace();
@@ -101,6 +100,5 @@ public class VelocityExportServlet extends KinisiServlet {
     } catch (UnauthorizedException e) {
       resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
     }
-    
   }
 }
