@@ -28,6 +28,8 @@ public class VelocityExportServlet extends KinisiServlet {
 
   private static final String VELOCITY_CONFIG = "/velocity.properties";
 
+  private static final String RESPONSE_CHARSET = "UTF-8";
+
   private static final TemplateExportFormat DEFAULT_FORMAT = TemplateExportFormat.CSV;
 
   private static final String PARAM_FORMAT = "format";
@@ -88,6 +90,7 @@ public class VelocityExportServlet extends KinisiServlet {
 
       List<DeviceLocation> locs = controller.getDeviceLocations(deviceId, startDate, endDate);
       resp.setContentType(format.getContentType());
+      resp.setCharacterEncoding(RESPONSE_CHARSET);
       VelocityContext context = new VelocityContext();
       context.put("deviceId", deviceId);
       context.put("deviceLocations", locs);
